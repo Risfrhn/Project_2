@@ -67,7 +67,7 @@ export default function DashboardBosPage() {
       <div className="relative z-40">
         <NavigasiDasboardVar1 />
       </div>
-      <div className="container relative mt-24 mx-auto px-5 md:px-10">
+      <div className="relative w-full mt-24 mx-auto lg:px-16 px-10">
         <div className="grid grid-cols-2">
           <div>
             <p className="text-white text-3xl font-bold">Halaman Utama</p>

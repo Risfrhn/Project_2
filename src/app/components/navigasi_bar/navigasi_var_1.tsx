@@ -1,12 +1,15 @@
 "use client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
-import { faGear } from "@fortawesome/free-solid-svg-icons";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { Route } from "next";
+import { AuthService } from "@/backend/services/authService";
+import { useRouter } from "next/navigation";
 
 export default function NavigasiDasboardVar1() {
+    const router = useRouter();
     const [role, setRole] = useState<string | null>(null);
 
     useEffect(() => {
@@ -28,6 +31,15 @@ export default function NavigasiDasboardVar1() {
     const filteredMenus = menuItems.filter(item =>
         role === "boss" ? item.roles.includes("boss") : item.roles.includes("penghuni")
     );
+
+    const handleLogout = async () => {
+        try {
+            await AuthService.logout();
+            router.push("/" as Route);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <div className="navbar fixed bg-[#111A45] shadow-sm lg:px-16 px-10 z-40">
@@ -66,14 +78,14 @@ export default function NavigasiDasboardVar1() {
                 </div>
             </div>
             <div className="navbar-end gap-5">
-                <button className="text-white hover:rotate-45 transition-transform duration-300">
-                    <FontAwesomeIcon icon={faGear} className="h-4 opacity-75" />
+                <button className="text-white hover:text-gray-400 transition-colors duration-300" onClick={handleLogout}>
+                    <FontAwesomeIcon icon={faRightFromBracket} className="h-4 opacity-75" />
                 </button>
                 <button className="text-white indicator">
                     <FontAwesomeIcon icon={faBell} className="h-4 opacity-75" />
                     <span className="badge badge-xs badge-primary indicator-item"></span>
                 </button>
-                <div className="flex flex-row gap-2 items-center">
+                <div className="flex flex-row gap-2 ps-2 items-center">
                     <div className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full ring ring-blue-500 ring-offset-base-100 ring-offset-2">
                             <img

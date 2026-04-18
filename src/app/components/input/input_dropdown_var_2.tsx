@@ -5,16 +5,18 @@ interface InputDropdownVar2Props {
     placeholder: string,
     name?: string,
     value?: string[],
+    selectedValue?: string,
     onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void,
 }
 
-export default function InputDropdownVar2({ label, placeholder, name, value, onChange }: InputDropdownVar2Props) {
+export default function InputDropdownVar2({ label, placeholder, name, value, selectedValue, onChange }: InputDropdownVar2Props) {
     return (
         <div className="form-control w-full">
             <div>
                 <label className="block text-[13px] font-bold text-gray-700 mb-2">{label}</label>
                 <select
                     name={name}
+                    value={selectedValue}
                     onChange={onChange}
                     className="w-full text-sm bg-gray-50/50 text-gray-700 border border-gray-200 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400"
                 >

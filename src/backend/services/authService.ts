@@ -21,6 +21,16 @@ export const AuthService = {
         return user
     },
 
+    async logout() {
+        const user = await supabase.auth.getUser();
+        await ActService.tambahAktivitas({
+            aktivitas: "Logout",
+            id_user: user.data.user?.id,
+        })
+        await supabase.auth.signOut();
+        return user
+    },
+
 
 
     async register(payload: any) {
@@ -42,6 +52,14 @@ export const AuthService = {
             aktivitas: "Register",
             id_user: data?.user?.id,
         })
+        return data
+    },
+
+    async getAllUser(){
+        const{data, error} = await supabase 
+            .from('users')
+            .select("*")
+        if (error) throw error
         return data
     }
 }

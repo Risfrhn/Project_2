@@ -4,9 +4,10 @@ interface TableVar3Props {
     isiTabel: string[],
     dataTabel: any[],
     children?: React.ReactNode;
+    renderAksi?: (item: any) => React.ReactNode;
 }
 
-export default function TableVar3({ title, deskripsi, isiTabel, dataTabel, children }: TableVar3Props) {
+export default function TableVar3({ title, deskripsi, isiTabel, dataTabel, children, renderAksi }: TableVar3Props) {
     return (
         <div className="overflow-hidden w-full flex flex-col h-full bg-white rounded-xl shadow-md border border-gray-100">
             <div className="p-5 xl:p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white flex-shrink-0">
@@ -33,11 +34,11 @@ export default function TableVar3({ title, deskripsi, isiTabel, dataTabel, child
                                 <td className="px-4 xl:px-6 py-4 overflow-hidden">
                                     <div className="flex items-center gap-2 xl:gap-4">
                                         <div className="flex-shrink-0 w-7 h-7 xl:w-9 xl:h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-[10px] xl:text-xs ring-2 ring-white shadow-sm">
-                                            {(item?.penghuni || "?").charAt(0).toUpperCase()}
+                                            {(item?.id_users?.nama_user || "?").charAt(0).toUpperCase()}
                                         </div>
                                         <div className="truncate">
                                             <div className="font-bold text-gray-800 text-xs xl:text-sm block truncate">
-                                                {item?.penghuni || "Anonim"}
+                                                {item?.users?.nama_user || "Anonim"}
                                             </div>
                                         </div>
                                     </div>
@@ -58,7 +59,7 @@ export default function TableVar3({ title, deskripsi, isiTabel, dataTabel, child
                                     </span>
                                 </td>
                                 <td>
-                                    {children}
+                                    {renderAksi ? renderAksi(item) : children}
                                 </td>
                             </tr>
                         ))}

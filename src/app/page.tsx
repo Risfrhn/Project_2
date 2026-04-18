@@ -22,6 +22,10 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
+      if (!form.email.trim() || !form.password.trim()) {
+        alert("Email dan password wajib diisi.");
+        return;
+      }
       const data = await AuthService.login(form);
       console.log(data);
       console.log(data[0].role);
@@ -68,8 +72,22 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-5 sm:gap-6">
-                <InputVar1 name="email" onChange={handleChange} label="Email" type="email" placeholder="Masukkan email" />
-                <InputVar1 name="password" onChange={handleChange} label="Password" type="password" placeholder="Masukkan password" />
+                <InputVar1
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  label="Email"
+                  type="email"
+                  placeholder="Masukkan email"
+                />
+                <InputVar1
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  label="Password"
+                  type="password"
+                  placeholder="Masukkan password"
+                />
 
 
                 <button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-4 py-3.5 transition-colors shadow-lg shadow-blue-600/30">
