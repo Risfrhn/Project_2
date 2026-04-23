@@ -55,7 +55,6 @@ export default function TableVar4({ title, deskripsi, head, data, isiData, child
                                     if (item.includes('tanggal') || item.includes('date')) {
                                         displayValue = formatDate(value);
                                     } else if (item.includes('jumlah') || item.includes('bayar') || item.includes('harga')) {
-                                        // Specific check to avoid matching 'tanggal_bayar' with currency formatter
                                         if (!item.includes('tanggal')) {
                                             displayValue = formatCurrency(value);
                                         }
