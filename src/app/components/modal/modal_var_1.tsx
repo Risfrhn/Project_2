@@ -9,7 +9,7 @@ interface ModalVar1Props {
 export default function ModalVar1({ title, description, children, onClose, onSave }: ModalVar1Props) {
     return (
         <div className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-md p-6 w-96">
+            <div className="bg-white rounded-xl shadow-md p-6 w-96 max-h-[80vh] no-scrollbar overflow-y-auto">
                 <h2 className="text-xl text-black font-bold">{title}</h2>
                 <p className="text-gray-600 text-sm mb-3">{description}</p>
                 <div className="mb-1">

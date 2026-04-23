@@ -20,9 +20,12 @@ import InputVar1 from "@/app/components/input/input_var_1";
 import AlertVar1 from "@/app/components/alert/alert_var_1";
 import ModalVar2 from "@/app/components/modal/modal_var_2";
 import InputDropdownVar2 from "@/app/components/input/input_dropdown_var_2";
+import BreadcrumbsButtonVar1 from "@/app/components/breadcrumbs/breadcrumbs_button_var_1";
+import { useRouter } from "next/navigation";
 
 
 export default function DashboardBosPage() {
+    const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -34,7 +37,7 @@ export default function DashboardBosPage() {
     });
     const [formEdit, setFormEdit] = useState({
         nama_kontrakan: "",
-        id_user:"",
+        id_user: "",
     });
 
     const handleTambahUnit = async () => {
@@ -81,7 +84,7 @@ export default function DashboardBosPage() {
     }
 
     const handleUpdateUnit = async () => {
-        try{
+        try {
             if (!idUnit) return;
             const payload: any = {};
 
@@ -107,17 +110,10 @@ export default function DashboardBosPage() {
                 id_user: "",
             });
 
-        }catch (error) {
+        } catch (error) {
             console.error("Error hapus unit:", error);
         }
     }
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setForm({
-          ...form,
-          [e.target.name]: e.target.value,
-        });
-      };
 
     const handleChangePenghuni = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedLabel = e.target.value;
@@ -149,6 +145,14 @@ export default function DashboardBosPage() {
                 <NavigasiDasboardVar1 />
             </div>
             <div className="relative mt-24 z-10 mx-auto lg:px-16 px-10">
+                <div className="grid grid-cols-1 mb-1">
+                    <BreadcrumbsButtonVar1
+                        items={[
+                            { title: "Halaman Utama", onClick: () => { router.push("/page/admin_page/halaman_utama") } },
+                            { title: "Kontrakan", onClick: () => { } },
+                        ]}
+                    />
+                </div>
                 <div className="grid grid-cols-2">
                     <div>
                         <p className="text-white text-3xl font-bold">Kontrakan</p>
@@ -174,7 +178,7 @@ export default function DashboardBosPage() {
                                                 name="nama_kontrakan"
                                                 value={form.nama_kontrakan}
                                                 onChange={(e) => setForm({ ...form, nama_kontrakan: e.target.value })}
-                                            />  
+                                            />
                                         </>
 
                                     </ModalVar1>
@@ -218,10 +222,16 @@ export default function DashboardBosPage() {
                         renderAksi={(item) => (
                             <div className="flex gap-2">
                                 <ButtonVar3 iconButton={faWater} color="blue" />
-                                <ButtonVar3 iconButton={faBook} color="yellow" />
-                                <ButtonVar3 
-                                    iconButton={faPenToSquare} 
-                                    color="green" 
+                                <ButtonVar3
+                                    iconButton={faBook}
+                                    color="yellow"
+                                    onClick={() => {
+                                        router.push(`/page/admin_page/pembayaran_page/${item.id}`);
+                                    }}
+                                />
+                                <ButtonVar3
+                                    iconButton={faPenToSquare}
+                                    color="green"
                                     onClick={() => {
                                         setFormEdit({
                                             nama_kontrakan: item?.nama_kontrakan || "",

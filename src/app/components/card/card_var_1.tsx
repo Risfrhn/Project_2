@@ -35,7 +35,7 @@ export default function CardVar1({
                 <div className="flex flex-row items-center justify-between w-full">
                     <div className="flex flex-col">
                         <p className="text-black text-3xl font-bold">{count}</p>
-                        <p className="text-black">{subtitle}</p>
+                        <p className="text-black mt-2">{subtitle}</p>
                     </div>
                     <div>
                         <FontAwesomeIcon icon={bigIcon} className={`h-16 text-6xl text-${iconColor}-500 opacity-50`} />
