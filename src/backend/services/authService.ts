@@ -12,6 +12,7 @@ export const AuthService = {
             .from('users')
             .select('*')
             .eq('id', data?.user?.id)
+            .single()
         if (userError) throw userError
         await ActService.tambahAktivitas({
             id: data?.user?.id,
@@ -55,8 +56,8 @@ export const AuthService = {
         return data
     },
 
-    async getAllUser(){
-        const{data, error} = await supabase 
+    async getAllUser() {
+        const { data, error } = await supabase
             .from('users')
             .select("*")
         if (error) throw error

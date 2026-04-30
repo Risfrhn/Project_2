@@ -67,27 +67,18 @@ export const UnitService = {
             .from('kontrakan')
             .select(`
                 *,
-                pembayaran_kontrakan (*)
+                users (*)
             `)
-            .eq('id_kontrakan', id);
+            .eq('id', id);
         if (error) throw error
         return data
     },
 
 
     // PEMBAYARAN KONTRAKAN
-    async simpanGambar(file: File, table: string) {
-        const dataGambar = file;
-        if (!dataGambar) return;
-        const { data, error } = await supabase
-            .storage
-            .from(table)
-            .upload(dataGambar.name, dataGambar);
-        if (error) throw error
-        return data
-    },
     async tambahPembayaran(payload: any) {
         const file = payload.get('bukti_pembayaran');
+        const buktiName = await this.simpanGambar(file, 'bukti_transaksi_kontrakan');
         const { data, error } = await supabase
             .from('pembayaran_kontrakan')
             .insert({
@@ -95,9 +86,8 @@ export const UnitService = {
                 tanggal_bayar: payload.get('tanggal_bayar'),
                 bulan: payload.get('bulan'),
                 jumlah_bayar: payload.get('jumlah_bayar'),
-                bukti_pembayaran: file.name,
+                bukti_pembayaran: buktiName,
             });
-        await this.simpanGambar(file, 'bukti_transaksi_kontrakan');
         if (error) throw error
         const { data: data_Kontrakan, error: errorKontrakan } = await supabase
             .from('kontrakan')
@@ -178,5 +168,99 @@ export const UnitService = {
             .eq('id', id);
         if (error) throw error
         return data
-    }
+    },
+
+
+    // Tagihan Air
+
+    async tambahTagihanAir(payload: any) {
+        const buktiName = await this.simpanGambar(payload.get('bukti_pembayaran'), 'bukti_bayar_air');
+        const fotoName = await this.simpanGambar(payload.get('foto'), 'foto_meteran');
+
+        const { data, error } = await supabase
+            .from('air')
+            .insert({
+                id_kontrakan: payload.get('id_kontrakan'),
+                pemakaian: payload.get('pemakaian'),
+                total_pembayaran: payload.get('total_tagihan'),
+                foto: fotoName,
+                bukti_pembayaran: buktiName,
+                tanggal_bayar: payload.get('tanggal_bayar'),
+            });
+        if (error) throw error
+        return data
+    },
+
+    async getAllTagihanByIdKontrakan(id: string) {
+        const { data, error } = await supabase
+            .from('air')
+            .select(`*`)
+            .eq("id_kontrakan", id);
+        if (error) throw error;
+        return data;
+    },
+
+    async deleteTagihanAir(id: string) {
+        const { data: dataImage } = await supabase
+            .from("air")
+            .select("foto, bukti_pembayaran")
+            .eq("id", id);
+        if (!dataImage) return;
+        await this.hapusGambar("air", id, "foto", "foto_meteran");
+        await this.hapusGambar("air", id, "bukti_pembayaran", "bukti_bayar_air");
+        const { data, error } = await supabase
+            .from('air')
+            .delete()
+            .eq("id", id);
+        if (error) throw error;
+        return data;
+    },
+
+    async hitungTotalMeteran(id: string) {
+        const data = await this.getAllTagihanByIdKontrakan(id);
+        let total = 0;
+        for (const item of data) {
+            total += item.pemakaian || 0;
+        }
+        return total;
+    },
+
+    async hitungTotalTagihan(id: string) {
+        const data = await this.getAllTagihanByIdKontrakan(id);
+        let total = 0;
+        for (const item of data) {
+            total += item.total_pembayaran || 0;
+        }
+        return total;
+    },
+
+
+
+    // general function
+    async simpanGambar(file: File, table: string) {
+        const dataGambar = file;
+        if (!dataGambar) return null;
+        const fileName = dataGambar.name + "-" + new Date().getTime();
+        const { data, error } = await supabase
+            .storage
+            .from(table)
+            .upload(fileName, dataGambar);
+        if (error) throw error
+        return fileName;
+    },
+
+    async hapusGambar(table: string, id: string, select: string, bucket: string) {
+        const { data: dataImage } = await supabase
+            .from(table)
+            .select(select)
+            .eq("id", id)
+            .single();
+        if (!dataImage) return;
+        const filePath = Object.values(dataImage)[0];
+        const { error: deleteError } = await supabase
+            .storage
+            .from(bucket)
+            .remove([filePath]);
+        if (deleteError) throw deleteError;
+    },
 }

@@ -27,8 +27,6 @@ export default function Home() {
         return;
       }
       const data = await AuthService.login(form);
-      console.log(data);
-      console.log(data[0].role);
       if (data[0].role === "boss") {
         router.push("/page/admin_page/halaman_utama" as Route);
       } else {

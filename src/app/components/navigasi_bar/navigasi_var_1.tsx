@@ -8,28 +8,27 @@ import type { Route } from "next";
 import { AuthService } from "@/backend/services/authService";
 import { useRouter } from "next/navigation";
 
-export default function NavigasiDasboardVar1() {
-    const router = useRouter();
-    const [role, setRole] = useState<string | null>(null);
 
-    useEffect(() => {
-        // Safe access to localStorage in Client Side
-        const storedRole = localStorage.getItem("role");
-        setRole(storedRole);
-    }, []);
+export default function NavigasiDasboardVar1({ user }: { user?: any }) {
+    const router = useRouter();
+    const role = user?.role;
 
     // Menu Configuration (Sistem "Include")
     const menuItems: { name: string; href: Route; roles: string[] }[] = [
-        { name: "Dashboard", href: "/page/admin_page/halaman_utama" as Route, roles: ["boss", "penghuni"] },
-        { name: "Kontrakan", href: "/page/admin_page/kontrakan" as Route, roles: ["boss", "penghuni"] },
-        { name: "Keuangan", href: "#" as Route, roles: ["boss", "penghuni"] },
-        { name: "Keluhan", href: "#" as Route, roles: ["boss", "penghuni"] },
-        { name: "CCTV", href: "#" as Route, roles: ["boss", "penghuni"] },
+        { name: "Kontrakan", href: "/page/admin_page/kontrakan" as Route, roles: ["super_bos"] },
+        { name: "Keuangan", href: "#" as Route, roles: ["super_bos"] },
+        { name: "Users", href: "/page/admin_page/users" as Route, roles: ["super_bos"] },
+        { name: "CCTV", href: "#" as Route, roles: ["super_bos"] },
+
+        { name: "Halaman Utama", href: "#" as Route, roles: ["users"] },
+        { name: "Kontrakan", href: "#" as Route, roles: ["users"] },
+        { name: "Tagihan", href: "#" as Route, roles: ["users"] },
+        { name: "CCTV", href: "#" as Route, roles: ["users"] },
     ];
 
     // Filter menus based on role
     const filteredMenus = menuItems.filter(item =>
-        role === "boss" ? item.roles.includes("boss") : item.roles.includes("penghuni")
+        item.roles.includes(role || "")
     );
 
     const handleLogout = async () => {
@@ -95,10 +94,10 @@ export default function NavigasiDasboardVar1() {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-sm font-semibold text-white hidden md:block">
-                            {role === "boss" ? "John Doe" : "Penghuni"}
+                            {role === "super_bos" ? "John Doe" : "u"}
                         </span>
                         <span className="text-[10px] text-gray-400 font-medium hidden md:block">
-                            {role === "boss" ? "Boss Utama" : "User Member"}
+                            {role === "super_bos" ? "Boss Utama" : "u"}
                         </span>
                     </div>
                 </div>

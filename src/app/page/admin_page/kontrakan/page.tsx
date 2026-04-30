@@ -221,7 +221,13 @@ export default function DashboardBosPage() {
                         dataTabel={unit}
                         renderAksi={(item) => (
                             <div className="flex gap-2">
-                                <ButtonVar3 iconButton={faWater} color="blue" />
+                                <ButtonVar3
+                                    iconButton={faWater}
+                                    color="blue"
+                                    onClick={() => {
+                                        router.push(`/page/admin_page/tagihan_air/${item.id}`);
+                                    }}
+                                />
                                 <ButtonVar3
                                     iconButton={faBook}
                                     color="yellow"

@@ -64,9 +64,9 @@ export default function DashboardBosPage() {
   return (
     <div className="relative justify-center">
       <div className="absolute top-0 left-0 z-0 bg-[#111A45] pt-24 h-74 w-full"></div>
-      <div className="relative z-40">
+      {/* <div className="relative z-40">
         <NavigasiDasboardVar1 />
-      </div>
+      </div> */}
       <div className="relative w-full mt-24 mx-auto lg:px-16 px-10">
         <div className="grid grid-cols-2">
           <div>
@@ -113,9 +113,9 @@ export default function DashboardBosPage() {
             iconColor="red"
           />
           <CardVar1
-            title="Keluhan"
-            count="3"
-            subtitle="Laporan Masuk"
+            title="Users"
+            count="10"
+            subtitle="Total Users"
             icon={faHouse}
             bigIcon={faBuildingUser}
             iconColor="blue"

@@ -18,7 +18,7 @@ import { use } from "react";
 import { useEffect } from "react";
 import AlertVar1 from "@/app/components/alert/alert_var_1";
 
-export default function DashboardBosPage({ params }: { params: Promise<{ id: string }> }) {
+export default function PembayaranPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
     const { id } = use(params);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
@@ -156,11 +156,13 @@ export default function DashboardBosPage({ params }: { params: Promise<{ id: str
 
     const getNamaKontrakan = async () => {
         const data = await UnitService.getUnitById(id);
-        setDataNamaKontrakan(data);
+        setDataNamaKontrakan(data[0].users.nama_user);
+        console.log(data[0].users.nama_user);
     }
 
     useEffect(() => {
         getAllPembayaran();
+        getNamaKontrakan();
         hitungBulan();
         getPembayaranTerbaru();
         hitungTotalUangMasuk();
@@ -261,7 +263,7 @@ export default function DashboardBosPage({ params }: { params: Promise<{ id: str
                     />
                     <CardVar1
                         title="Penyewa"
-                        count={dataNamaKontrakan?.users?.nama_user || "-"}
+                        count={dataNamaKontrakan || "-"}
                         subtitle="Berkeluarga"
                         icon={faHouse}
                         bigIcon={faBuildingUser}
