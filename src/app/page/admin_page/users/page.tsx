@@ -1,6 +1,6 @@
 "use client";
 
-import NavigasiDasboardVar1 from "@/app/components/navigasi_bar/navigasi_var_1";
+
 import ButtonVar1 from "@/app/components/button/button_var_1";
 import ButtonVar2 from "@/app/components/button/button_var_2";
 import CardVar1 from "@/app/components/card/card_var_1";
@@ -18,9 +18,7 @@ export default function UsersPage() {
     return (
         <div className="relative justify-center">
             <div className="absolute top-0 left-0 z-0 bg-[#111A45] pt-24 h-74 w-full"></div>
-            <div className="relative z-40">
-                <NavigasiDasboardVar1 />
-            </div>
+
             <div className="relative w-full mt-24 mx-auto lg:px-16 px-10">
                 <div className="grid grid-cols-2">
                     <div>

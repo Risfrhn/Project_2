@@ -8,12 +8,15 @@ export const AuthService = {
             password: payload.password
         })
         if (error) throw error
-        const { data: user, error: userError } = await supabase
+
+        const { data: user } = await supabase
             .from('users')
             .select('*')
             .eq('id', data?.user?.id)
             .single()
-        if (userError) throw userError
+
+        if (!user) throw new Error("User tidak ditemukan");
+
         await ActService.tambahAktivitas({
             id: data?.user?.id,
             aktivitas: "Login",
@@ -22,14 +25,28 @@ export const AuthService = {
         return user
     },
 
+    async getDataUserLogin() {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
+        const { data, error } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", user.id)
+            .single();
+        if (error) return null;
+        return data
+    },
+
     async logout() {
-        const user = await supabase.auth.getUser();
-        await ActService.tambahAktivitas({
-            aktivitas: "Logout",
-            id_user: user.data.user?.id,
-        })
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            await ActService.tambahAktivitas({
+                aktivitas: "Logout",
+                id_user: user.id,
+            })
+        }
         await supabase.auth.signOut();
-        return user
+        return true
     },
 
 
@@ -45,6 +62,7 @@ export const AuthService = {
             .insert({
                 id: data?.user?.id,
                 nama_user: payload.nama_user,
+                email: payload.email,
                 role: payload.role
             });
         if (dbError) throw dbError

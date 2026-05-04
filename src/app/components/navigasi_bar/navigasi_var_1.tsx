@@ -6,12 +6,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { AuthService } from "@/backend/services/authService";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 
-export default function NavigasiDasboardVar1({ user }: { user?: any }) {
+export default function NavigasiDasboardVar1({ role: initialRole }: { role?: string }) {
     const router = useRouter();
-    const role = user?.role;
+    const pathname = usePathname();
+    const [user, setUser] = useState<any>(null);
 
     // Menu Configuration (Sistem "Include")
     const menuItems: { name: string; href: Route; roles: string[] }[] = [
@@ -20,25 +21,40 @@ export default function NavigasiDasboardVar1({ user }: { user?: any }) {
         { name: "Users", href: "/page/admin_page/users" as Route, roles: ["super_bos"] },
         { name: "CCTV", href: "#" as Route, roles: ["super_bos"] },
 
-        { name: "Halaman Utama", href: "#" as Route, roles: ["users"] },
         { name: "Kontrakan", href: "#" as Route, roles: ["users"] },
         { name: "Tagihan", href: "#" as Route, roles: ["users"] },
         { name: "CCTV", href: "#" as Route, roles: ["users"] },
     ];
 
     // Filter menus based on role
-    const filteredMenus = menuItems.filter(item =>
-        item.roles.includes(role || "")
-    );
+    const filteredMenus = menuItems.filter(item => {
+        const role = user?.role;
+        if (role === "super_bos") return item.roles.includes("super_bos");
+        if (role?.startsWith("kontrakan_")) return item.roles.includes("users");
+        return item.roles.includes(role || "");
+    });
 
     const handleLogout = async () => {
         try {
             await AuthService.logout();
             router.push("/" as Route);
+            setUser(null);
         } catch (error) {
             console.log(error);
         }
     }
+
+    const getDataUserLogin = async () => {
+        const data = await AuthService.getDataUserLogin();
+        setUser(data);
+    }
+
+    useEffect(() => {
+        getDataUserLogin();
+    }, [pathname]);
+
+
+    if (!user || pathname === "/") return null;
 
     return (
         <div className="navbar fixed bg-[#111A45] shadow-sm lg:px-16 px-10 z-40">
@@ -94,10 +110,10 @@ export default function NavigasiDasboardVar1({ user }: { user?: any }) {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-sm font-semibold text-white hidden md:block">
-                            {role === "super_bos" ? "John Doe" : "u"}
+                            {user.nama_user}
                         </span>
                         <span className="text-[10px] text-gray-400 font-medium hidden md:block">
-                            {role === "super_bos" ? "Boss Utama" : "u"}
+                            {user.role}
                         </span>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
 // Pastikan kamu menyiapkan file .env.local dengan isi variabel di bawah ini
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -16,5 +16,5 @@ if (!supabaseKey) {
     );
 }
 
-// Inisialisasi koneksi utama Supabase
-export const supabase = createClient(supabaseUrl, supabaseKey)
+// Inisialisasi koneksi utama Supabase menggunakan browser client agar cookie tersinkronisasi dengan middleware
+export const supabase = createBrowserClient(supabaseUrl, supabaseKey)

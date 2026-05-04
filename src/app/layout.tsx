@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { supabase } from "@/backend/db/supabase";
 import NavigasiDasboardVar1 from "@/app/components/navigasi_bar/navigasi_var_1";
+import { AuthService } from "@/backend/services/authService";
 
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -26,22 +26,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { data: { session } } = await supabase.auth.getSession();
-  let user = null;
+  const user = await AuthService.getDataUserLogin();
 
-  if (session?.user) {
-    const { data } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", session.user.id)
-      .single();
 
-    user = data;
-  }
   return (
     <html lang="en" className="h-full antialiased">
       <body className={`${plusJakartaSans.className} min-h-full flex flex-col bg-slate-50`}>
-        {user && <NavigasiDasboardVar1 user={user} />}
+        <NavigasiDasboardVar1 role={user?.role} />
         {children}
       </body>
     </html>

@@ -13,27 +13,36 @@ export default function Home() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
+    if (errorMsg) setErrorMsg("");
   };
 
   const handleLogin = async () => {
     try {
       if (!form.email.trim() || !form.password.trim()) {
-        alert("Email dan password wajib diisi.");
+        setErrorMsg("Email dan password wajib diisi.");
         return;
       }
+      setLoading(true);
+      setErrorMsg("");
       const data = await AuthService.login(form);
-      if (data[0].role === "boss") {
+      if (data.role === "super_bos") {
         router.push("/page/admin_page/halaman_utama" as Route);
       } else {
-        router.push("/page/admin_page/kontrakan" as Route);
+        router.push("/page/users/halaman_utama" as Route);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.error(error);
+      setErrorMsg(error.message || "Gagal masuk. Silahkan periksa kembali email dan password Anda.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -88,8 +97,28 @@ export default function Home() {
                 />
 
 
-                <button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-4 py-3.5 transition-colors shadow-lg shadow-blue-600/30">
-                  Masuk Ke Kontrakan
+                {errorMsg && (
+                  <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm border border-red-100 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {errorMsg}
+                  </div>
+                )}
+
+                <button 
+                  onClick={handleLogin} 
+                  disabled={loading}
+                  className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-4 py-3.5 transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                >
+                  {loading ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm"></span>
+                      Memproses...
+                    </>
+                  ) : (
+                    "Masuk Ke Kontrakan"
+                  )}
                 </button>
 
               </div>
