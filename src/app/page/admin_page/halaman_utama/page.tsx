@@ -13,6 +13,8 @@ import InputVar1 from "@/app/components/input/input_var_1";
 import InputDropdownVar2 from "@/app/components/input/input_dropdown_var_2";
 import { AuthService } from "@/backend/services/authService";
 import { ActService } from "@/backend/services/actService";
+import { UnitService } from "@/backend/services/unitService";
+import { UserService } from "@/backend/services/userService";
 
 
 
@@ -25,6 +27,9 @@ export default function DashboardBosPage() {
     nama_user: "",
     role: "",
   });
+  const [dataKontrakan, setDataKontrakan] = useState<any[]>([]);
+  const [persenKontrakan, setPersenKontrakan] = useState<number>(0);
+  const [jumlahUser, setJumlahUser] = useState<number>(0);
   const [aktivitas, setAktivitas] = useState<any[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -59,11 +64,30 @@ export default function DashboardBosPage() {
   };
 
   const getDataUserLogin = async () => {
-    const data = await AuthService.getDataUserLogin();
+    const data = await UserService.getDataUserLogin();
     setUser(data);
   }
 
+  const getAllDataKontrakan = async () => {
+    const data = await UnitService.getAllUnit();
+    setDataKontrakan(data);
+  }
+
+  const hitungPersenKontrakan = async () => {
+    const hitung = dataKontrakan.filter((item) => item.status_kontrakan === "terisi").length;
+    const persen = hitung / dataKontrakan.length * 100;
+    setPersenKontrakan(persen);
+  }
+
+  const getJumlahUser = async () => {
+    const data = await AuthService.getAllUser();
+    setJumlahUser(data.length);
+  }
+
   useEffect(() => {
+    getJumlahUser();
+    hitungPersenKontrakan();
+    getAllDataKontrakan();
     handleGetAktivitas();
     getDataUserLogin();
   }, []);
@@ -82,7 +106,7 @@ export default function DashboardBosPage() {
             <div className="justify-self-end">
               <div className="flex gap-2">
                 <ButtonVar2 />
-                <ButtonVar1 onClick={() => setIsModalOpen(true)} />
+                <ButtonVar1 onClick={() => setIsModalOpen(true)} text="Tambah Data" />
                 {
                   isModalOpen && (
                     <ModalVar1
@@ -104,8 +128,8 @@ export default function DashboardBosPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 my-5">
             <CardVar1
               title="Kontrakan"
-              count="3"
-              subtitle="100% Terisi"
+              count={dataKontrakan.length || 0}
+              subtitle={persenKontrakan ? `${persenKontrakan}% Terisi` : "Belum terisi"}
               icon={faHouse}
               bigIcon={faBuildingUser}
               iconColor="blue"
@@ -120,25 +144,19 @@ export default function DashboardBosPage() {
             />
             <CardVar1
               title="Users"
-              count="10"
+              count={jumlahUser || 0}
               subtitle="Total Users"
               icon={faHouse}
               bigIcon={faBuildingUser}
               iconColor="blue"
             />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+          <div className="grid grid-cols-1 gap-5 mb-5">
             <TableVar1
               title="Aktivitas Keuangan"
               deskripsi="Berikut adalah aktivitas keuangan yang terjadi di sistem."
               isiTabel={["Aktivitas", "Jumlah", "Status"]}
               dataTabel={[]}
-            />
-            <TableVar1
-              title="Aktivitas Terakhir"
-              deskripsi="Berikut adalah aktivitas terakhir yang terjadi di sistem."
-              isiTabel={["Aktivitas", "Waktu", "Nama"]}
-              dataTabel={aktivitas}
             />
           </div>
         </div>

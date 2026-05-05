@@ -39,6 +39,9 @@ export default function DashboardBosPage() {
         nama_kontrakan: "",
         id_user: "",
     });
+    const [dataKontrakan, setDataKontrakan] = useState<any[]>([]);
+    const [persenKontrakan, setPersenKontrakan] = useState<number>(0);
+    const [jumlahUser, setJumlahUser] = useState<number>(0);
 
     const handleTambahUnit = async () => {
         try {
@@ -69,6 +72,22 @@ export default function DashboardBosPage() {
         } catch (error) {
             console.error("Error get all user:", error);
         }
+    }
+
+    const getAllDataKontrakan = async () => {
+        const data = await UnitService.getAllUnit();
+        setDataKontrakan(data);
+    }
+
+    const hitungPersenKontrakan = async () => {
+        const hitung = dataKontrakan.filter((item) => item.status_kontrakan === "terisi").length;
+        const persen = hitung / dataKontrakan.length * 100;
+        setPersenKontrakan(persen);
+    }
+
+    const getJumlahUser = async () => {
+        const data = await AuthService.getAllUser();
+        setJumlahUser(data.length);
     }
 
     const handleHapusUnit = async () => {
@@ -159,7 +178,7 @@ export default function DashboardBosPage() {
                     <div className="justify-self-end">
                         <div className="flex gap-2">
                             <ButtonVar2 />
-                            <ButtonVar1 onClick={() => setIsModalOpen(true)} />
+                            <ButtonVar1 onClick={() => setIsModalOpen(true)} text="Tambah Data" />
                             {
                                 isModalOpen && (
                                     <ModalVar1
@@ -188,8 +207,8 @@ export default function DashboardBosPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 my-5">
                     <CardVar1
                         title="Kontrakan"
-                        count="3"
-                        subtitle="100% Terisi"
+                        count={dataKontrakan.length || 0}
+                        subtitle={persenKontrakan ? `${persenKontrakan}% Terisi` : "Belum terisi"}
                         icon={faHouse}
                         bigIcon={faBuildingUser}
                         iconColor="blue"
@@ -203,9 +222,9 @@ export default function DashboardBosPage() {
                         iconColor="red"
                     />
                     <CardVar1
-                        title="Keluhan"
-                        count="3"
-                        subtitle="Laporan Masuk"
+                        title="Users"
+                        count={jumlahUser || 0}
+                        subtitle="Total Users"
                         icon={faHouse}
                         bigIcon={faBuildingUser}
                         iconColor="blue"

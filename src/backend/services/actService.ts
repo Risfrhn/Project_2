@@ -24,4 +24,16 @@ export const ActService = {
         if (error) throw error
         return data
     },
+
+
+    async getAktivitasById(id: string) {
+        const { data, error } = await supabase
+            .from('aktivitas')
+            .select(`
+                *`)
+            .eq('id_user', id)
+            .order('created_at', { ascending: false })
+        if (error) throw error
+        return data
+    }
 }

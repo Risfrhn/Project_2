@@ -186,7 +186,7 @@ export default function TagihanAirPage({ params }: { params: Promise<{ id: strin
                     <div className="justify-self-end">
                         <div className="flex gap-2">
                             <ButtonVar2 />
-                            <ButtonVar1 onClick={() => { setIsModalAddOpen(true) }} />
+                            <ButtonVar1 onClick={() => { setIsModalAddOpen(true) }} text="Tambah Data" />
                             {isModalAddOpen && (
                                 <ModalVar1
                                     title="Tambah Pembayaran"

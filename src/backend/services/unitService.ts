@@ -74,6 +74,47 @@ export const UnitService = {
         return data
     },
 
+    async cekPembayaran(id: string) {
+        const { data, error } = await supabase
+            .from('pembayaran_kontrakan')
+            .select(`*`)
+            .eq('id_kontrakan', id)
+            .order('tanggal_bayar', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+        if (error) throw error;
+
+        if (!data || !data.tanggal_bayar) {
+            return {
+                status: "No Data",
+                hitungHari: 0,
+            }
+        }
+
+        const lastPaid = new Date(data.tanggal_bayar);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const jatuhTempo = new Date(lastPaid);
+        jatuhTempo.setMonth(jatuhTempo.getMonth() + 1);
+        jatuhTempo.setHours(0, 0, 0, 0);
+
+        const diffTime = jatuhTempo.getTime() - today.getTime();
+        const totalJatuhTempo = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (totalJatuhTempo < 0) {
+            return {
+                status: "Terlambat",
+                hitungHari: Math.abs(totalJatuhTempo),
+            }
+        } else {
+            return {
+                status: "Tepat Waktu",
+                hitungHari: 0,
+            }
+        }
+    },
+
 
     // PEMBAYARAN KONTRAKAN
     async tambahPembayaran(payload: any) {

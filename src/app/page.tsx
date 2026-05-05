@@ -36,7 +36,7 @@ export default function Home() {
       if (data.role === "super_bos") {
         router.push("/page/admin_page/halaman_utama" as Route);
       } else {
-        router.push("/page/users/halaman_utama" as Route);
+        router.push(`/page/users/halaman_utama/${data.id}` as Route);
       }
     } catch (error: any) {
       console.error(error);
@@ -106,8 +106,8 @@ export default function Home() {
                   </div>
                 )}
 
-                <button 
-                  onClick={handleLogin} 
+                <button
+                  onClick={handleLogin}
                   disabled={loading}
                   className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-4 py-3.5 transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >

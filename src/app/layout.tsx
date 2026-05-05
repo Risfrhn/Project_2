@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import NavigasiDasboardVar1 from "@/app/components/navigasi_bar/navigasi_var_1";
-import { AuthService } from "@/backend/services/authService";
+import { UserService } from "@/backend/services/userService";
 
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
 });
 
-
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "CMS Dashboard",
@@ -26,7 +21,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await AuthService.getDataUserLogin();
+  const user = await UserService.getDataUserLogin();
 
 
   return (

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { AuthService } from "@/backend/services/authService";
+import { UserService } from "@/backend/services/userService";
 import { useRouter, usePathname } from "next/navigation";
 
 
@@ -21,7 +22,7 @@ export default function NavigasiDasboardVar1({ role: initialRole }: { role?: str
         { name: "Users", href: "/page/admin_page/users" as Route, roles: ["super_bos"] },
         { name: "CCTV", href: "#" as Route, roles: ["super_bos"] },
 
-        { name: "Kontrakan", href: "#" as Route, roles: ["users"] },
+        { name: "Halaman Utama", href: "/page/users/halaman_utama" as Route, roles: ["users"] },
         { name: "Tagihan", href: "#" as Route, roles: ["users"] },
         { name: "CCTV", href: "#" as Route, roles: ["users"] },
     ];
@@ -45,7 +46,7 @@ export default function NavigasiDasboardVar1({ role: initialRole }: { role?: str
     }
 
     const getDataUserLogin = async () => {
-        const data = await AuthService.getDataUserLogin();
+        const data = await UserService.getDataUserLogin();
         setUser(data);
     }
 

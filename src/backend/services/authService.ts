@@ -16,35 +16,11 @@ export const AuthService = {
             .single()
 
         if (!user) throw new Error("User tidak ditemukan");
-
-        await ActService.tambahAktivitas({
-            id: data?.user?.id,
-            aktivitas: "Login",
-            id_user: data?.user?.id,
-        })
         return user
     },
 
-    async getDataUserLogin() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
-        const { data, error } = await supabase
-            .from("users")
-            .select("*")
-            .eq("id", user.id)
-            .single();
-        if (error) return null;
-        return data
-    },
 
     async logout() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            await ActService.tambahAktivitas({
-                aktivitas: "Logout",
-                id_user: user.id,
-            })
-        }
         await supabase.auth.signOut();
         return true
     },
