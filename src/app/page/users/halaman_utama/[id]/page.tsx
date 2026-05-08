@@ -11,18 +11,36 @@ import { useEffect, useState } from "react";
 import { UnitService } from "@/backend/services/unitService";
 import { use } from "react";
 import { ActService } from "@/backend/services/actService";
+import InputVar1 from "@/app/components/input/input_var_1";
+import InputDropdownVar2 from "@/app/components/input/input_dropdown_var_2";
+import ModalVar1 from "@/app/components/modal/modal_var_1";
+import { PaymentService } from "@/backend/services/paymentService";
 
 
 export default function DashboardUsersPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const [date, setDate] = useState<string>("");
     const [dataPembayaranTerbaru, setDataPembayaranTerbaru] = useState<any>(null);
-    const [dataNamaKontrakan, setDataNamaKontrakan] = useState<any>(null);
+    const [unitData, setUnitData] = useState<any>(null);
     const [statusPembayaran, setStatusPembayaran] = useState({
         status: "",
         hitungHari: 0,
     });
     const [aktivitas, setAktivitas] = useState<any[]>([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const getUnitInfo = async () => {
+        const data = await UnitService.getUnitById(id);
+        setUnitData(data[0] || null);
+    }
+
+    const [FormPembayaran, setFormPembayaran] = useState({
+        id_kontrakan: "",
+        jumlah_bulan: "",
+        jumlah_kubik: "",
+        total_bayar: 0,
+        type_bayar: "",
+        foto_meteran: null as File | null
+    });
 
 
 
@@ -35,10 +53,6 @@ export default function DashboardUsersPage({ params }: { params: Promise<{ id: s
         setDataPembayaranTerbaru(data || null);
     }
 
-    const getNamaKontrakan = async () => {
-        const data = await UnitService.getUnitById(id);
-        setDataNamaKontrakan(data[0]?.users?.nama_user);
-    }
 
     const cekPembayaran = async () => {
         const data = await UnitService.cekPembayaran(id);
@@ -50,13 +64,36 @@ export default function DashboardUsersPage({ params }: { params: Promise<{ id: s
         setAktivitas(data || []);
     }
 
+
+    const tambahPembayaran = async () => {
+        const data = await PaymentService.tambahPembayaran(FormPembayaran);
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        window.location.href = data.redirect_url;
+    }
+
     useEffect(() => {
         getAktivitas();
-        getNamaKontrakan();
+        getUnitInfo();
         hitungBulan();
         getPembayaranTerbaru();
         cekPembayaran();
     }, []);
+
+    useEffect(() => {
+        const harga = unitData?.harga || 0;
+        const total = FormPembayaran.type_bayar === "kontrakan"
+            ? harga * Number(FormPembayaran.jumlah_bulan || 0)
+            : Number(FormPembayaran.jumlah_kubik || 0) * 25000;
+
+        setFormPembayaran(prev => ({
+            ...prev,
+            total_bayar: total,
+            id_kontrakan: unitData?.id || ""
+        }));
+    }, [FormPembayaran.type_bayar, FormPembayaran.jumlah_bulan, FormPembayaran.jumlah_kubik, unitData]);
 
     return (
         <div className="relative justify-center">
@@ -71,7 +108,7 @@ export default function DashboardUsersPage({ params }: { params: Promise<{ id: s
                     <div className="justify-self-end">
                         <div className="flex gap-2">
                             <ButtonVar2 />
-                            <ButtonVar1 onClick={() => { }} text="Tambah Pembayaran" />
+                            <ButtonVar1 onClick={() => { setModalOpen(true) }} text="Tambah Pembayaran" />
                         </div>
                     </div>
                 </div>
@@ -94,7 +131,7 @@ export default function DashboardUsersPage({ params }: { params: Promise<{ id: s
                     />
                     <CardVar1
                         title="Detail"
-                        count={dataNamaKontrakan || "-"}
+                        count={unitData?.users?.nama_user || "-"}
                         subtitle="Berkeluarga"
                         icon={faHouse}
                         bigIcon={faBuildingUser}
@@ -109,6 +146,44 @@ export default function DashboardUsersPage({ params }: { params: Promise<{ id: s
                         dataTabel={aktivitas}
                     />
                 </div>
+
+                {
+                    modalOpen && (
+                        <ModalVar1
+                            title="Tambah Pembayaran"
+                            description="Silahkan isi data pembayaran di bawah ini."
+                            onClose={() => setModalOpen(false)}
+                            onSave={tambahPembayaran}
+                        >
+                            <InputDropdownVar2 name="type_bayar" onChange={(e) => setFormPembayaran({ ...FormPembayaran, type_bayar: e.target.value })} label="Type Bayar" placeholder="Masukkan type bayar" value={["air", "kontrakan"]} />
+                            {FormPembayaran.type_bayar === "air" && (
+                                <InputVar1 name="jumlah_kubik" onChange={(e) => setFormPembayaran({ ...FormPembayaran, jumlah_kubik: e.target.value })} label="Jumlah Kubik" type="text" placeholder="Masukkan jumlah kubik" />
+                            )}
+                            {FormPembayaran.type_bayar === "air" && (
+                                <InputVar1
+                                    label="Bukti Meteran air"
+                                    type="file"
+                                    placeholder="Masukkan bukti Meteran air"
+                                    name="foto_meteran"
+                                    onChange={() => { }}
+                                    error={""}
+                                />
+                            )}
+                            {FormPembayaran.type_bayar === "kontrakan" && (
+                                <InputVar1 name="jumlah_bulan" onChange={(e) => setFormPembayaran({ ...FormPembayaran, jumlah_bulan: e.target.value })} label="Jumlah Bulan Kontrakan" type="text" placeholder="Masukkan jumlah bulan kontrakan" />
+                            )}
+
+                            <InputVar1
+                                name="total_bayar"
+                                value={FormPembayaran.total_bayar}
+                                label="Total Tagihan"
+                                type="text"
+                                placeholder="Masukkan total tagihan"
+                                readOnly
+                            />
+                        </ModalVar1>
+                    )
+                }
             </div>
         </div>
     );

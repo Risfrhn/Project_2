@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { createClient } from "@/backend/db/supabaseServer";
+import { UserController } from "@/backend/controllers/userController";
 import NavigasiDasboardVar1 from "@/app/components/navigasi_bar/navigasi_var_1";
-import { UserService } from "@/backend/services/userService";
 
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -21,7 +22,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await UserService.getDataUserLogin();
+  const supabase = await createClient();
+  const user = await UserController.getDataUserLogin(supabase);
 
 
   return (

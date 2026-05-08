@@ -34,9 +34,11 @@ export default function DashboardBosPage() {
     const [users, setUsers] = useState<any[]>([]);
     const [form, setForm] = useState({
         nama_kontrakan: "",
+        harga: "",
     });
     const [formEdit, setFormEdit] = useState({
         nama_kontrakan: "",
+        harga: "",
         id_user: "",
     });
     const [dataKontrakan, setDataKontrakan] = useState<any[]>([]);
@@ -50,6 +52,7 @@ export default function DashboardBosPage() {
             await getAllUnit();
             setForm({
                 nama_kontrakan: "",
+                harga: "",
             });
         } catch (error) {
             console.error("Error tambah unit:", error);
@@ -126,6 +129,7 @@ export default function DashboardBosPage() {
             setIdUnit("");
             setFormEdit({
                 nama_kontrakan: "",
+                harga: "",
                 id_user: "",
             });
 
@@ -196,6 +200,14 @@ export default function DashboardBosPage() {
                                                 value={form.nama_kontrakan}
                                                 onChange={(e) => setForm({ ...form, nama_kontrakan: e.target.value })}
                                             />
+                                            <InputVar1
+                                                label="Harga kontrakan"
+                                                type="number"
+                                                placeholder="Masukkan harga kontrakan"
+                                                name="harga"
+                                                value={form.harga}
+                                                onChange={(e) => setForm({ ...form, harga: e.target.value })}
+                                            />
                                         </>
 
                                     </ModalVar1>
@@ -258,6 +270,7 @@ export default function DashboardBosPage() {
                                     onClick={() => {
                                         setFormEdit({
                                             nama_kontrakan: item?.nama_kontrakan || "",
+                                            harga: item?.harga || "",
                                             id_user: item?.id_user || "",
                                         });
                                         setIsModalEditOpen(true);
@@ -290,6 +303,19 @@ export default function DashboardBosPage() {
                                 placeholder="Ganti nama kontrakan"
                                 name="nama_kontrakan"
                                 value={formEdit.nama_kontrakan}
+                                onChange={(e) =>
+                                    setFormEdit((prev) => ({
+                                        ...prev,
+                                        nama_kontrakan: e.target.value,
+                                    }))
+                                }
+                            />
+                            <InputVar1
+                                label="Harga kontrakan"
+                                type="number"
+                                placeholder="Ganti harga kontrakan"
+                                name="harga"
+                                value={formEdit.harga}
                                 onChange={(e) =>
                                     setFormEdit((prev) => ({
                                         ...prev,

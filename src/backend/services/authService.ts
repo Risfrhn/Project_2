@@ -1,60 +1,47 @@
-import { supabase } from '../db/supabase';
-import { ActService } from '@/backend/services/actService';
-
 export const AuthService = {
     async login(payload: any) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: payload.email,
-            password: payload.password
-        })
-        if (error) throw error
-
-        const { data: user } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', data?.user?.id)
-            .single()
-
-        if (!user) throw new Error("User tidak ditemukan");
-        return user
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to login');
+        }
+        return response.json();
     },
-
 
     async logout() {
-        await supabase.auth.signOut();
-        return true
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST'
+        });
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to logout');
+        }
+        return response.json();
     },
 
-
-
     async register(payload: any) {
-        const { data, error } = await supabase.auth.signUp({
-            email: payload.email,
-            password: payload.password,
-        })
-        if (error) throw error
-        const { error: dbError } = await supabase
-            .from('users')
-            .insert({
-                id: data?.user?.id,
-                nama_user: payload.nama_user,
-                email: payload.email,
-                role: payload.role
-            });
-        if (dbError) throw dbError
-        await ActService.tambahAktivitas({
-            id: data?.user?.id,
-            aktivitas: "Register",
-            id_user: data?.user?.id,
-        })
-        return data
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to register');
+        }
+        return response.json();
     },
 
     async getAllUser() {
-        const { data, error } = await supabase
-            .from('users')
-            .select("*")
-        if (error) throw error
-        return data
+        const response = await fetch('/api/users');
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to get all user');
+        }
+        return response.json();
     }
 }

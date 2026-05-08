@@ -1,66 +1,53 @@
-import { supabase } from "../db/supabase";
-import { ActService } from '@/backend/services/actService'
-import { getAllUserAdmin, deleteUserAdmin, updatePasswordAdmin } from "../db/supabaseAdmin";
-
 export const UserService = {
     async getAllUser() {
-        return await getAllUserAdmin();
+        const response = await fetch('/api/users');
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to get all user');
+        }
+        return response.json();
     },
 
     async getDataUserLogin() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
-        const { data, error } = await supabase
-            .from("users")
-            .select("*")
-            .eq("id", user.id)
-            .single();
-        if (error) return null;
-        return data
+        const response = await fetch('/api/users/me');
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to get data user login');
+        }
+        return response.json();
     },
 
     async getDataUserById(id: string) {
-        const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', id)
-            .single();
-        if (error) throw error
-        return data
+        const response = await fetch(`/api/users/${id}`);
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to get data user by id');
+        }
+        return response.json();
     },
 
 
     async hapusDataUser(id: string) {
-
-        // Ambil data user login
-        const user = await this.getDataUserLogin()
-        await ActService.tambahAktivitas({
-            aktivitas: `Hapus User ${user?.nama_user}`,
-            id_user: user?.id,
+        const response = await fetch(`/api/users/${id}`, {
+            method: 'DELETE'
         });
-
-        // Hapus data di table users
-        const { error: hapusUserError } = await supabase
-            .from('users')
-            .delete()
-            .eq('id', id);
-
-        if (hapusUserError) throw hapusUserError
-        await deleteUserAdmin(id);
-        return true;
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to hapus data user');
+        }
+        return response.json();
     },
 
     async updatePasswordUser(id: string, password: string) {
-        // Ambil data user login
-        const user = await this.getDataUserLogin();
-
-        // tambah aktivitas
-        await ActService.tambahAktivitas({
-            aktivitas: "Update Password User",
-            id_user: user?.id,
+        const response = await fetch(`/api/users/${id}/password`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
         });
-
-        // ubah password
-        return await updatePasswordAdmin(id, password);
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Failed to update password');
+        }
+        return response.json();
     }
 }
